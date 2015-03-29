@@ -1,26 +1,37 @@
-\documentclass[10pt]{article}
-\usepackage{times}
+\documentclass[11pt]{article}
+\usepackage{tgbonum}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \hypersetup{colorlinks,breaklinks,
             urlcolor=[rgb]{0,0,1},
             citecolor=[rgb]{0,0,1},
             linkcolor=[rgb]{0,0,01}}
-% \usepackage{fullpage}
+\usepackage{fullpage}
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
-
+\linespread{1}
 \begin{document}
 % Title Space
-\section*{\centering \LARGE \textsc{Data Detection for Band Limited Signals with ISI}}
+\title{\textsc{Data Detection for Band Limited Signals with ISI}}
+\author{\textit{Rahul Krishna}\\Dept. Electrical Engineering\\North Carolina State University \and \textit{Hongwei Wang}\\Dept. Electrical Engineering\\North Carolina State University}
+\date{}
+\maketitle
 %\subsection*{\centering \large \textit{Rahul Krishna}}
 
 % Abstract
-\subsection*{Abstract}
-Our study aims to explore the various tools for detecting the information symbols at the receiver when the received signal is transmitted through a non-ideal band limited channel with additive Gaussian noise \cite{Proakis}.
+\section*{Abstract}
+Our study aims to explore the various tools for detecting the information symbols at the receiver when the received signal is transmitted through a non-ideal band limited channel with additive Gaussian noise. We plan on studying the application of optimum Maximum Likelihood Sequence estimation (MLSE) using the Viterbi algorithm \cite{Forney}. We would also like to look into its performance for channels with intersymbol interference.
+
+It has been shown that the MLSE for a channel with ISI has a computational complexity that grows exponentially with the length of the channel time dispersion. Therefore, other suboptimal techniques such as linear equalization (LE), and decision-feedback equalization (DFE) will be studied as alternative approaches to MLSE \cite{Proakis}. As an extension to the above, we also plan on inspecting the Iterative Correction of Intersymbol-Interference using Turbo equalization \cite{Catherine}.
+
+Our paper will therefore be a detailed survey of the aforementioned techniques for detection data sequence for band limited signals with intersymbol interference. The primary focus however will be on maximum likelihood sequence estimation using the viterbi algorithm. After remarking on it's merits and demerits, other alternative approaches will be addressed and will be compared one another.
 
 \begin{thebibliography}{10}
+\bibitem{Forney}
+Forney, G. David. "Maximum-likelihood sequence estimation of digital sequences in the presence of intersymbol interference." Information Theory, IEEE Transactions on 18.3 (1972): 363-378.
 \bibitem{Proakis}
 Proakis, J.G. and Salehi, M., ``Digital Communications,'' McGraw-Hill International Edition. 2008
+\bibitem{Catherine}
+Douillard, Catherine, et al. "Iterative correction of intersymbol interference: Turbo equalization." European transactions on telecommunications 6.5 (1995): 507-511.
 \end{thebibliography}
 \end{document}
