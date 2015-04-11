@@ -11,6 +11,7 @@
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{balance}
+\usepackage{mcode}
 \usepackage{flushend}
 \usepackage{hyphenat}
 \setlength{\parindent}{0em}
@@ -85,6 +86,7 @@ The above expression makes the rest of the algorithm very easy to comprehend. As
 Using the properties of HMMs, the above equation can be represented as
 \begin{equation}
 \hat{Z} = {\operatorname{argmax}}[~p(X_{n}|Z_{n})~p(Z_{n}|Z_{n-1})~p(Z_{1,..,n-1},X_{1,..,n-1})]
+\label{eq:vit3}
 \end{equation}
 Notice that $p(Z_{1,..,n-1},X_{1,..,n-1}) = \mu_{n-1}(Z_{n-1})$, therefore we have
 \begin{equation}
@@ -102,7 +104,121 @@ That's nothing but $Z_1$ given $X_1$ which is known to us as we have the initial
 \hat{Z} = {\operatorname{argmax}}[~p(X_{2}|Z_{2})~p(Z_{2}|Z_{1})~p(X_{1}|Z_{1})~p(Z_{1})] 
 \label{eq:vit_n2}
 \end{equation}
-We have all the values, so the $\operatorname{argmax}}$ is the sequence of $Z$ ($Z_1~Z_2$) that produces a maximum for the product of the arguments inside $\operatorname{argmax}}$ in Eq.~\ref{eq:vit_n2}.
+We have all the values, so the $\operatorname{argmax}$ is the sequence of $Z$ ($Z_1~Z_2$) that produces a maximum for the product of the arguments inside $\operatorname{argmax}$ in Eq.~\ref{eq:vit_n2}. The pseudocode for the algorithm is available in Appendix~\ref{App:A}
+
+\subsubsection{Maximum Likelihood Sequence Estimation}
+This section sets up the problem of estimating the transmitted sequence of symbols as a formulation  for the viterbi algorithm. We begin by assuming that the received signal has ISI that spans $L+1$ symbols, i.e., we have $L$ interfering symbols. Then an optimum detection scheme selects from all possible input sequence schemes, the one with the highest probability. In the presence of an AWGN channel the sequence probability can be calculated as:
+\begin{equation}
+\begin{align}
+p(y_1, y_2,..., y_N| x_1, x_2,...,x_N)~\overset{AWGN}{\operatorname{=}}~\underset{k}{\Pi}~p(y_k| x_1, x_2,...,x_N)\\\overset{L~interfering~components}{\operatorname{=}}~\underset{k}{\Pi}~p(y_k| x_1, x_2,...,x_{k-L})
+\end{align}
+\label{eq:mlse1}
+\end{equation}
+
+Assuming that we have an M-ary system, there will be $M^{L+1}$ possible states, which can be sub-divided into $M^L$ groups. Each group corresponds to a specific state, and any state say $s_k$ will be a combination of previous $L-1$ bits, that is
+\begin{equation}
+\begin{align}
+s_k = [x_{k-1}, x_{k-2}, x_{k-3}, ..., x_{k-L-1}]\\
+s_{k+1} = [x_{k}, x_{k-1}, x_{k-2}, ..., x_{k-L-2}]\\
+= [x_k~~s_{k,excluding k-L-1}]
+\end{align}\label{eq:states}
+\end{equation}
+Now, if we were to take the logarithm of equation~\ref{eq:mlse1} and drop the constants, MLSE becomes a problem of estimating the sequence that maximizes the following equation,
+\begin{equation}
+\begin{align}
+\operatorname{max~}\operatorname{log}(p(y_1, y_2,..., y_N| x_1, x_2,...,x_N))
+\end{align}
+\end{equation}
+We can also express this in terms of $\operatorname{argmax}$ as:
+\begin{equation}
+\begin{align}
+\Rightarrow \underset{\forall~Y \in k,~X\in k-L}{\operatorname{argmax}}[~\operatorname{log}~p(Y|X)]
+\label{eq:mlse2}
+\end{align}
+\end{equation}
+This closely resembles equation~\ref{eq:vit}. Thus MLSE can be obtained by using the viterbi algorithm. The viterbi algorithm discussed in the previous section is a generic approach. In order for it to be used for sequence estimation, we need to make some remarks, so lets go back to equation~\ref{eq:states}. 
+
+We noted that we had $M^{L+1}$ possible sequences with $M^L$ states and $M$ sequences in each state. The $M$ sequences all differ in the first bit x$_1$. For the $M$ sequences in $M^L$ states, we select the sequence with the largest probability and discard the remaining $M-1$ sequences. Thus, at the end of the iteration we will have $M^L$ sequences and their corresponding weights.
+\newpage
+\begin{table*}[]
+\begin{tabular}[|l|]
+\hline
+\begin{lstlisting}
+% use viterbi to calculate observation probability
+%
+% T: array of observations, length `t`
+% S: array of states, length `m` 
+% V: observations, length `n`
+% A(m, m): state transition probability distribution
+% B(m, n): observation probability distribution
+function viterbi_obs(T, S, A, B)
+  V = zeros(t, m)
+
+  % iterate through each time step
+  for i in 1:t
+    % and consider each state
+    for s in 1:m
+
+      % calculate the sum of the probabilities 
+      % of having been in every state before, 
+      % times the state-transition probability
+      for o in 1:m
+        V(i, s) += V(i-1, o) * A(o, s)
+      end
+
+      % finally multiply that by the probability 
+      % of seeing the current observation 
+      % given this state
+      V(i, s) *= B(s, T(i))
+    end
+  end
+
+  return sum(V(t))
+end
+
+% use viterbi to decode a series of 
+% observations to the most likely series of states
+% same input as before
+function viterbi_decode(T, S, A, B)
+  V = zeros(t, m)
+
+  % store back-references to figure out the actual 
+  % path taken to get there
+  P = zeros(t, m)
+
+  % iterate through each time step
+  for i in 1:t
+    % and consider each state
+    for s in 1:m
+
+      % get array of  probabilities of having 
+      % been in each previous step, multiplied 
+      % by the probability of transitioning 
+      % to the current state
+      X = zeros(m)
+      for x in 1:m
+        X(x) = V(i-1, x) * A(x, s)
+      end
+      V(i, s) = max(X) * B(s, T(i))
+      P(i, s) = argmax(X)
+    end
+  end
+
+  % build the output sequence by tracing the 
+  % backpointers of the highest probabilities 
+  % at each step
+  OS = zeros(t)
+  OS(t) = P(t, argmax(V(t)))
+  for i in t-1:1
+    prepend(OS, P(i, argmax(V(i))))
+  end
+
+  return OS
+end
+\end{lstlisting}
+\end{tabular}
+\end{table}
+
 \bibliographystyle{IEEEtran}
 
 \bibliography{Ref}
