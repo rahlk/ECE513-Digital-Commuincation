@@ -25,7 +25,8 @@
 \usepackage{blindtext}
 \usepackage{times}
 \usepackage{cite}
-
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
 \begin{document}
   \markboth{ECE 513, Digital Communications. Spring, 2015}%
   {ECE 513, Digital Communications. Spring, 2015}
@@ -49,8 +50,59 @@ This is a comprehensive report on the various tools for detecting the informatio
   \section{Methods and Materials}
   \subsection{Maximum Likelihood Sequence Estimation}
   \subsubsection{The Viterbi Algorithm}
-  The Viterbi algorithm is named after it's discoverer Dr. Andrew Viterbi who published this in 1967~\cite{vit67} as a decoding algorithm, which later was shown to be a maximum-likelihood decoding algorithm~\cite{For73} equivalent to a dynamic programming solution to the problem of finding the shortest path through a weighted graph. The algorithm can be described in terms of Hidden Markov Models, the aim of the viterbi algorithm is the estimate the most probable sequence of hidden states ($Z_{1,2,...,N}$) given the observed states ($X_{1,2,...,N}$), see figure \ref{fig:hmm} for the labels $Z$ and $X$. 
+  The Viterbi algorithm is named after it's discoverer Dr. Andrew Viterbi who published this in 1967~\cite{vit67} as a decoding algorithm, which later was shown to be a maximum-likelihood decoding algorithm~\cite{For73} equivalent to a dynamic programming solution to the problem of finding the shortest path through a weighted graph. The algorithm can be described in terms of Hidden Markov Models, the aim of the viterbi algorithm is the estimate the most probable sequence of hidden states ($Z_{1,2,...,N}$) given the observed states ($X_{1,2,...,N}$), see figure \ref{fig:hmm} for the labels $Z$ and $X$. There are some inherent assumptions that are made namely, the initial distributions on the hidden variable Z  (Eq.~\ref{eq:init}), the emission distribution (Eq.~\ref{eq:emission}), and the Transition Probabilities (Eq.~\ref{eq:transition}) are know to us. 
+\begin{subequations}
+\begin{equation}
+  \Pi(i)=p(Z=i) \hspace{0.3cm} \forall i \in \{1,2,...,m\}~and~\forall Z
+  \label{eq:init}
+\end{equation}
+\begin{equation}
+  \varepsilon_i(x)=p(x|Z_{k}=i) \hspace{0.3cm} \forall i \in \{1,2,...,m\}~and~x\in X
+  \label{eq:emission}
+\end{equation}
+\begin{equation}
+  T(i,j)=p(Z_{k+1}=j|Z_{k}=i) \hspace{0.3cm} \forall i,j \in \{1,2,...,m\}
+  \label{eq:transition}
+\end{equation}
+\end{subequations}
 
+Given this, the goal of the viterbi algorithm is then to compute the most likely sequence, $\hat{Z}$. Formally, this can be represented as shown in Eq.~\ref{eq:vit}.
+
+\begin{equation}
+\hat{Z} = \underset{Z=1,2...N}{\operatorname{argmax}}~[~p(Z|X)] \hspace{0.3cm} \forall ~Z, X
+\label{eq:vit}
+\end{equation}
+
+If we use the fundamentals of probalility theory, we can note that the conditional probability $[~p(Z|X)]$ is actually equal to $\frac{p(Z,X)}{p(X)}$, but $p(X)$ has no influence over the $\underset{Z=1,2...N}{\operatorname{argmax}}$, thus the~Eq.\ref{eq:vit} can be expressed as Eq.\ref{eq:vit1}.
+\begin{equation}
+\hat{Z} = \underset{Z=1,2...N}{\operatorname{argmax}}~[~p(Z,X)] \hspace{0.3cm} \forall ~Z, X
+\label{eq:vit1}
+\end{equation}
+The above expression makes the rest of the algorithm very easy to comprehend. Assuming that we do our computation at $Z_n$, we have:
+\begin{equation}
+\hat{Z} = {\operatorname{argmax}}~p(Z_{1,..,n},X_{1,..,n})
+\end{equation}
+Using the properties of HMMs, the above equation can be represented as
+\begin{equation}
+\hat{Z} = {\operatorname{argmax}}[~p(X_{n}|Z_{n})~p(Z_{n}|Z_{n-1})~p(Z_{1,..,n-1},X_{1,..,n-1})]
+\end{equation}
+Notice that $p(Z_{1,..,n-1},X_{1,..,n-1}) = \mu_{n-1}(Z_{n-1})$, therefore we have
+\begin{equation}
+\hat{Z} = {\operatorname{argmax}}[~p(X_{n}|Z_{n})~p(Z_{n}|Z_{n-1})~\mu_{n-1}(Z_{n-1})]
+\label{eq:vit2}
+\end{equation}
+As mentioned before, both $~p(X_{n}|Z_{n})$, the emission probability and $~p(Z_{n}|Z_{n-1})$ are known. It can be noted that equation~\ref{eq:vit2} is a recursive operation that can be traced back to the $n=1$. 
+
+So, breaking this down, at $n=1$,
+\begin{equation}
+\hat{Z} = {\operatorname{argmax}}[p(X_{1}|Z_{1})~p(Z_{1})] = p(X_{1}|Z_{1})~p(Z_{1})
+\end{equation}
+That's nothing but $Z_1$ given $X_1$ which is known to us as we have the initial distribution. At $n=2$ we get,
+\begin{equation}
+\hat{Z} = {\operatorname{argmax}}[~p(X_{2}|Z_{2})~p(Z_{2}|Z_{1})~p(X_{1}|Z_{1})~p(Z_{1})] 
+\label{eq:vit_n2}
+\end{equation}
+We have all the values, so the $\operatorname{argmax}}$ is the sequence of $Z$ ($Z_1~Z_2$) that produces a maximum for the product of the arguments inside $\operatorname{argmax}}$ in Eq.~\ref{eq:vit_n2}.
 \bibliographystyle{IEEEtran}
 
 \bibliography{Ref}
