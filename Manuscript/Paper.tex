@@ -1,5 +1,4 @@
-\documentclass[10pt,journal,compsoc,onecolumn
-]{IEEEtran} %draftclsnofoot, 
+\documentclass[10pt,journal,compsoc]{IEEEtran} %draftclsnofoot, 
 \usepackage{graphicx}
 \graphicspath{ {./_figures/} }
 \setlength\fboxsep{1pt}
@@ -13,6 +12,7 @@
 \usepackage{amsmath}
 \usepackage{balance}
 \usepackage{flushend}
+\usepackage{hyphenat}
 \setlength{\parindent}{0em}
 \setlength{\parskip}{1em}
 \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
@@ -27,45 +27,32 @@
 \usepackage{cite}
 
 \begin{document}
-  \markboth{BME 560 Medical Imaging: X-ray, CT, and Nuclear Methods. Fall, 
-  2014}%
-  {BME 560 Medical Imaging: X-ray, CT, and Nuclear Methods. Fall, 2014}
+  \markboth{ECE 513, Digital Communications. Spring, 2015}%
+  {ECE 513, Digital Communications. Spring, 2015}
   
   \title{Data Detection for Band Limited Signals with ISI}
-  \author{\IEEEauthorblockN{Rahul Krishna}, 
-  \IEEEauthorblockA{\normalsize {\textit{Dept. of Electrical and Computer 
-  Engineering}\\
-    North Carolina State University, Email: 
-    \href{mailto:rkrish11@ncsu.edu}{{rkrish11@ncsu.edu}}}}\\\\
-    \and 
-    \IEEEauthorblockN{Hongwei Wang}, 
-  \IEEEauthorblockA{\normalsize {\textit{Dept. of Electrical and Computer 
-  Engineering}\\
-    North Carolina State University, Email: 
-    \href{mailto:hwang32@ncsu.edu}{hwang32@ncsu.edu}}}}}
-
+\author{Rahul~Krishna and Hongwei~Wang\\
+Department of Electrical Engineering, NC State University. \thanks{
+e-mail: \{rkrish11, hwang32\}@ncsu.edu}}
 	\IEEEcompsoctitleabstractindextext{%
   \begin{abstract}
-This paper explores the various tools for detecting the information symbols at the receiver when the received signal is transmitted through a non-ideal band limited channel with additive Gaussian noise. We plan on studying the application of optimum Maximum Likelihood Sequence estimation (MLSE) using the Viterbi algorithm. We would also like to look into its performance for channels with intersymbol interference.
-
-It has been shown that the MLSE for a channel with ISI has a computational complexity that grows exponentially with the length of the channel time dispersion. Therefore, other suboptimal techniques such as linear equalization (LE), and decision-feedback equalization (DFE) will be studied as alternative approaches to MLSE \cite{Proakis}. As an extension to the above, we also plan on inspecting the Iterative Correction of Intersymbol-Interference using Turbo equalization \cite{Catherine}.
-
-Our paper will therefore be a detailed survey of the aforementioned techniques for detection data sequence for band limited signals with intersymbol interference. The primary focus however will be on maximum likelihood sequence estimation using the viterbi algorithm. After remarking on it's merits and demerits, other alternative approaches will be addressed and will be compared one another.
+This is a comprehensive report on the various tools for detecting the information symbols at the receiver when the received signal is transmitted through a non-ideal band limited channel with additive Gaussian noise. This paper studys the application of optimum Maximum Likelihood Sequence estimation (MLSE) using the Viterbi algorithm. We would also like to look into its performance for channels with intersymbol interference. Research has shown that the MLSE for a channel with ISI has a computational complexity that grows exponentially with the length of the channel time dispersion. Therefore, other suboptimal techniques such as linear equalization (LE), and decision-feedback equalization (DFE) will be studied as alternative approaches to MLSE. As an extension to the above, this report also plans on inspecting the Iterative Correction of Intersymbol-Interference using Turbo equalization \cite{Catherine}. This report will therefore be a detailed survey of the various techniques for detection data sequence for band limited signals with intersymbol interference. The primary focus however will be on maximum likelihood sequence estimation using the viterbi algorithm. After remarking on it's merits and demerits, other alternative approaches will be addressed and will be compared one another.
     
   \end{abstract}
-  % IEEEtran.cls defaults to using nonbold math in the Abstract.
-  % This preserves the distinction between vectors and scalars. However,
-  % if the journal you are submitting to favors bold math in the abstract,
-  % then you can use LaTeX's standard command \boldmath at the very start
-  % of the abstract to achieve this. Many IEEE journals frown on math
-  % in the abstract anyway. In particular, the Computer Society does
-  % not want either math or citations to appear in the abstract.
-  
-  % Note that keywords are not normally used for peerreview papers.
+
   \begin{IEEEkeywords}
-    Tomotherapy, Intensity Modulated Radiation Therapy.
+    Maximum likelihood sequence estimation, Viterbi Algorithm, Inter-symbol Interference
   \end{IEEEkeywords}}
   \maketitle
   
   \section{Introduction}
+  \section{Methods and Materials}
+  \subsection{Maximum Likelihood Sequence Estimation}
+  \subsubsection{The Viterbi Algorithm}
+  The Viterbi algorithm is named after it's discoverer Dr. Andrew Viterbi who published this in 1967~\cite{vit67} as a decoding algorithm, which later was shown to be a maximum-likelihood decoding algorithm~\cite{For73} equivalent to a dynamic programming solution to the problem of finding the shortest path through a weighted graph. The algorithm can be described in terms of Hidden Markov Models, the aim of the viterbi algorithm is the estimate the most probable sequence of hidden states ($Z_{1,2,...,N}$) given the observed states ($X_{1,2,...,N}$), see figure \ref{fig:hmm} for the labels $Z$ and $X$. 
+
+\bibliographystyle{IEEEtran}
+
+\bibliography{Ref}
+
 \end{document}
